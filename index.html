@@ -72,6 +72,7 @@
             gap: 15px;
             max-width: 300px;
             width: 100%;
+            position: relative;
         }
 
         input {
@@ -401,6 +402,29 @@
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
 
+        /* Audio Player Styles */
+        .audio-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .audio-controls button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 20px;
+            background: #ff69b4;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .audio-controls button:hover {
+            background: #d63384;
+            transform: scale(1.05);
+        }
+
         @media (max-width: 480px) {
             .choices { flex-direction: column; align-items: center; gap: 10px; }
             .btn-yes, .btn-no { width: 200px; max-width: none; }
@@ -416,8 +440,8 @@
     </style>
 </head>
 <body>
-    <audio id="bgMusic" loop>
-        <source src="data:audio/mpeg;base64,/+MYxAAAAANIAAAAAExBTUUzLjk4LjIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" type="audio/mpeg">
+    <audio id="bgMusic" autoplay loop>
+        <source src="https://github.com/yourusername/123.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Page 1: Nhập mật khẩu -->
@@ -425,10 +449,15 @@
         <div class="container">
             <h1>Có một món quà đặc biệt dành cho bạn 💕</h1>
             <div class="input-group">
-                <input type="password" id="password" placeholder="Mật khẩu của trái tim 💖" maxlength="10">
+                <input type="password" id="password" placeholder="Mật khẩu của trái tim 💖" maxlength="15">
+                <span id="togglePassword" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #ff69b4;">👁️</span>
                 <button onclick="checkPassword()">Mở quà ✨</button>
             </div>
             <p id="error" class="error hidden">Mật khẩu chưa đúng rồi, thử lại nhé 😘</p>
+            <div class="audio-controls">
+                <button onclick="playMusic()">Play 🎵</button>
+                <button onclick="pauseMusic()">Pause ⏸️</button>
+            </div>
         </div>
     </div>
 
@@ -448,6 +477,10 @@
                 <div class="box">🎁</div>
                 <p>Nhấn vào 🎁 để mở quà nhé!! </p>
             </div>
+            <div class="audio-controls">
+                <button onclick="playMusic()">Play 🎵</button>
+                <button onclick="pauseMusic()">Pause ⏸️</button>
+            </div>
         </div>
     </div>
 
@@ -461,6 +494,10 @@
             <div class="choices">
                 <button class="btn-yes" onclick="openLetter()"> Có, mở luôn</button>
                 <button class="btn-no" onclick="refuseLetter()"> Không, ngại lắm</button>
+            </div>
+            <div class="audio-controls">
+                <button onclick="playMusic()">Play 🎵</button>
+                <button onclick="pauseMusic()">Pause ⏸️</button>
             </div>
         </div>
     </div>
@@ -483,17 +520,21 @@
             </div>
             
             <button class="restart" onclick="restart()">💕 Xem lại nào 💕</button>
+            <div class="audio-controls">
+                <button onclick="playMusic()">Play 🎵</button>
+                <button onclick="pauseMusic()">Pause ⏸️</button>
+            </div>
         </div>
     </div>
 
     <script>
-        const CORRECT_PASSWORD = "Doan-xem";
+        const CORRECT_PASSWORD = "doanxem";
         let noClickCount = 0;
         let typingIndex = 0;
         let currentPage = 1;
+        let isPasswordVisible = false;
 
-       const messages = `💖 Chúc bạn ngày lễ vui vẻ, 364 ngày còn lại luôn xinh đẹp, mạnh mẽ và hạnh phúc.
-                        Mong rằng hôm nay và mãi về sau, bạn luôn nở nụ cười thật tươi 💕`;
+        const messages = `💖 Chúc bạn ngày lễ vui vẻ, 364 ngày còn lại luôn xinh đẹp, mạnh mẽ và hạnh phúc.💕`;
 
         const pages = document.querySelectorAll('.page');
         const passwordInput = document.getElementById('password');
@@ -502,6 +543,7 @@
         const bgMusic = document.getElementById('bgMusic');
         const btnNo = document.querySelector('.btn-no');
         const btnYes = document.querySelector('.btn-yes');
+        const togglePassword = document.getElementById('togglePassword');
 
         function showPage(pageId) {
             pages.forEach(page => page.classList.remove('active'));
@@ -514,9 +556,15 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            playMusic();
+            bgMusic.volume = 0.3;
+            bgMusic.play().catch(() => {});
             createFloatingHearts();
             passwordInput.focus();
+            togglePassword.addEventListener('click', () => {
+                isPasswordVisible = !isPasswordVisible;
+                passwordInput.type = isPasswordVisible ? 'text' : 'password';
+                togglePassword.textContent = isPasswordVisible ? '🙈' : '👁️';
+            });
         });
 
         function checkPassword() {
@@ -677,6 +725,10 @@
             bgMusic.play().catch(() => {});
         }
 
+        function pauseMusic() {
+            bgMusic.pause();
+        }
+
         if (passwordInput) {
             passwordInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') checkPassword();
@@ -685,4 +737,3 @@
     </script>
 </body>
 </html>
-
